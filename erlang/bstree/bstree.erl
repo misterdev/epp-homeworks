@@ -1,3 +1,7 @@
+% Homeworks
+% 1. Create a function that removes a key from a BST
+% 2. Create the append function: naïve and using a fold
+
 - module(bstree) .
 - export([main/0]) .
 
@@ -32,12 +36,3 @@ main() ->
 	% mappend(Tree2, Tree).
 	Tree3 = foldtree(fun insert/2, Tree, Tree2) ,
 	remove(3, Tree3) .
-
-
-
-
-% Esercizi
-% 1. Scrivere la funzione che rimuove una chiave da un BST
-% 2. Scrivere la funzione append:
-% 		- a mano 
-% 		- usando una fold
