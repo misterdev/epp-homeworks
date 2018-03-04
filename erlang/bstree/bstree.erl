@@ -11,8 +11,20 @@ insert(_K, T) -> T .
 foldl(_F, R, []) -> R ;
 foldl(F, R, [H | TL]) -> foldl(F, F(H, R), TL) .
 
+% APPEND
+mappend(T1, nil) ->  T1 ;
+mappend(nil, T2) -> T2 ;
+mappend({node, K, L, R}, T2) -> insert(K, mappend(L, mappend(R, T2))).
+
+foldtree(F, RET, nil) -> RET ;
+foldtree(F, RET, {node, K, L, R}) -> foldtree(F, foldtree(F, F(K, RET), L), R) .
+
 main() ->
-	foldl(fun insert/2, empty(), [8, 3, 10, 14, 6, 7, 13, 4, 1, 3]) .
+	Tree = foldl(fun insert/2, empty(), [8, 3, 10, 14]),
+	Tree2 = foldl(fun insert/2, empty(), [ 6, 7, 13, 4, 1, 3]),
+	% mappend(Tree2, Tree).
+	foldtree(fun insert/2, Tree, Tree2) .
+
 
 % Esercizi
 % 1. Scrivere la funzione che rimuove una chiave da un BST
