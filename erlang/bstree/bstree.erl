@@ -22,15 +22,16 @@ foldtree(F, RET, {node, K, L, R}) -> foldtree(F, foldtree(F, F(K, RET), L), R) .
 
 % REMOVE
 remove(_K, nil) -> nil ;
-remove(K, {node, K1, L, R}) when K == K1 -> mappend(R, L);
-remove(K, {node, K1, L, R}) -> {node, K1, remove(K, L), remove(K, R)} .
+remove(K, {node, K1, L, R}) when K < K1 -> {node, K1, remove(K, L), R} ;
+remove(K, {node, K1, L, R}) when K > K1 -> {node, K1, L, remove(K, R)} ;
+remove(_, {node, _, L, R}) -> mappend(R, L) .
 
 main() ->
 	Tree = foldl(fun insert/2, empty(), [8, 3, 10, 14]),
 	Tree2 = foldl(fun insert/2, empty(), [ 6, 7, 13, 4, 1, 3]),
 	% mappend(Tree2, Tree).
 	Tree3 = foldtree(fun insert/2, Tree, Tree2) ,
-	remove(8, Tree3) .
+	remove(3, Tree3) .
 
 
 
