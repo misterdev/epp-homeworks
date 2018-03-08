@@ -20,9 +20,9 @@ mappend(T1, nil) ->  T1 ;
 mappend(nil, T2) -> T2 ;
 mappend({node, K, L, R}, T2) -> insert(K, mappend(L, mappend(R, T2))).
 
-foldtree(_F, RET, nil) -> RET ;
-foldtree(_F, nil, T) -> T ;
-foldtree(F, RET, {node, K, L, R}) -> foldtree(F, foldtree(F, F(K, RET), L), R) .
+foldtree(_F, nil, RET) -> RET ;
+foldtree(_F, T, nil) -> T ;
+foldtree(F, {node, K, L, R}, RET) -> foldtree(F, R, foldtree(F, L, F(K, RET))) .
 
 % REMOVE
 remove(_K, nil) -> nil ;
