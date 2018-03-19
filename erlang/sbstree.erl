@@ -19,14 +19,26 @@ foldl(_F, [], T) -> T ;
 foldl(F, [{K, V}|TL], T) ->
 	foldl(F, TL, F(K, V, T)).
 
-% Search Key
-getValue(_K, nil) -> not_present ;
-getValue(K, { node, K1, V, L, R }) when K1 > K -> getValue(K, L) ;
-getValue(K, { node, K1, V, L, R }) when K > K1 -> getValue(K, R) ;
-getValue(_K, { node, _K, V, _L, _R } ) -> V .
+% Search key
+get_value(_K, nil) -> not_present ;
+get_value(K, { node, K1, V, L, R }) when K1 > K -> get_value(K, L) ;
+get_value(K, { node, K1, V, L, R }) when K > K1 -> get_value(K, R) ;
+get_value(_K, { node, _K, V, _L, _R } ) -> V .
+
+% Search key using exceptions
+throw_value(_K, nil) -> throw(not_present) ;
+throw_value(K, { node, K1, V, L, R }) when K1 > K -> throw_value(K, L) ;
+throw_value(K, { node, K1, V, L, R }) when K > K1 -> throw_value(K, R) ;
+throw_value(_K, { node, _K, V, _L, _R } ) -> throw({found, V}) .
+
 
 main() ->
 	Tree = foldl(fun insert/3, [{0, ciao}, {1, ciao1}, {4, ciao4}, {8, ciao8}, {17, ciao17}, {3, ciao3}], nil),
 	% Tree = foldl(fun insert/3, [{0, ciao}], nil),
-	getValue(18, Tree).
+	% get_value(18, Tree).
+	K = 4,
+	try throw_value(K, Tree) catch
+		{ found, V } -> io:format("Found: ~p~n", [V]) ;
+		not_present -> io:format("Key not present: ~p~n", [K])
+	end.
 	% io:format("Executing").
