@@ -5,7 +5,7 @@
 %    locale.
 
 - module(sbstree) .
-- export([main/0]) .
+- export([main/1]) .
 
 % Key value binary search tree
 insert(K, V, nil) -> {node, K, V, nil, nil} ;
@@ -31,12 +31,9 @@ throw_value(K, { node, K1, V, L, R }) when K1 > K -> throw_value(K, L) ;
 throw_value(K, { node, K1, V, L, R }) when K > K1 -> throw_value(K, R) ;
 throw_value(_K, { node, _K, V, _L, _R } ) -> throw({found, V}) .
 
-
-main() ->
+main(K) ->
 	Tree = foldl(fun insert/3, [{0, ciao}, {1, ciao1}, {4, ciao4}, {8, ciao8}, {17, ciao17}, {3, ciao3}], nil),
-	% Tree = foldl(fun insert/3, [{0, ciao}], nil),
-	% get_value(18, Tree).
-	K = 4,
+	% get_value(K, Tree).
 	try throw_value(K, Tree) catch
 		{ found, V } -> io:format("Found: ~p~n", [V]) ;
 		not_present -> io:format("Key not present: ~p~n", [K])
