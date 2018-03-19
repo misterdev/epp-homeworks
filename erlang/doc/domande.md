@@ -21,9 +21,15 @@
 	- e nello switch
 	- pattern irrefutabile
 
+### 19/03
+- Cosa sono le eccezioni, un modo per uscire da una serie di chiamate ricorsive (errore, successo es: ricerca in BST)
+- Blocco finally, serve per eseguire codice (bilanciamento) sia in caso di eccezioni che no
+- Il try catch annulla i benefici della ricorsione di coda, quindi non va usato in server
+
 
 ### Perle
 - I linguaggi funzionali non possono essere comunque puri perchè ci sono interazioni i/o
 - I record sono comodi
 	- prevengono bug {giuseppina, 12, 7, 1998}: qual è il mese e quale il giorno?
 	- estensibilità, se voglio aggiungere CF al record sopra non devo modificare tutto il codice
+

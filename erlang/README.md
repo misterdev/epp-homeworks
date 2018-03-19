@@ -15,3 +15,8 @@
    implementazione usando la fold e una senza usare la fold.
    La funzione implemenata è tail-ricorsiva? Altrimenti fornire un'altra
    implementazione tail ricorsiva.
+4. Implementare un BST che mantenga coppie chiave-valore nei nodi.
+   Scrivere la funzione che, dato un BST, ritorni il valore associato a una
+   chiave nel BST se esiste e not_present altrimenti. Implementare la funzione
+   due volte: la prima senza usare eccezioni, la seconda usando un'eccezione
+   locale.
