@@ -27,10 +27,13 @@
    locale.
    
 ## Programmazione concorrente
-1. Scrivere un programma che risolvi il Cigarette Smokers Problem (cercarlo
+1. Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
+   busy waiting e facendo in modo che tutti i filosofi eseguano lo stesso
+   codice (nessun filosofo mancino...)
+2. Scrivere un programma che risolvi il Cigarette Smokers Problem (cercarlo
    su Wikipedia). La soluzione deve prevedere cinque attori: i 3 fumatori,
    l'agente che mette sul tavolo gli ingredienti e il tavolo.
-2. Risolvere il seguente problema: si vuole implementare un attore che
+3. Risolvere il seguente problema: si vuole implementare un attore che
    gestisce una cella di memoria soggetta a transazioni. In particolare,
    il modulo deve implementare i seguenti metodi:
    Cella = init_transaction(Value):
