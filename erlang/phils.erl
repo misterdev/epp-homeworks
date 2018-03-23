@@ -1,4 +1,4 @@
-- module(filosofi) .
+- module(phils) .
 - export([main/0, table/2, philosofer/4]) .
 
 % 5 filosofi 5 forchette servono due forchette per mangiare
@@ -69,6 +69,6 @@ philosofer(Main, _, _, 0) -> Main ! exit .
 main() ->
 	SEQ = lists:seq(0, 4),
 	Table = spawn(?MODULE, table, [ SEQ, [] ]) ,
-	[ philosofer(self(), Table, Phil, 5) || Phil <- SEQ ] ,
+	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, 5 ]) || Phil <- SEQ ] ,
 	[ receive exit -> io:format("Bye bye philosofer ~p~n", [Phil]) end || Phil <- SEQ ]
 	.
