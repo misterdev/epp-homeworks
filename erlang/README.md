@@ -27,7 +27,7 @@
    locale.
    
 ## Programmazione concorrente
-1. Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
+[1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/phils.erl) Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
    busy waiting e facendo in modo che tutti i filosofi eseguano lo stesso
    codice (nessun filosofo mancino...)
 2. Scrivere un programma che risolvi il Cigarette Smokers Problem (cercarlo
