@@ -1,3 +1,7 @@
+% Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
+%    busy waiting e facendo in modo che tutti i filosofi eseguano lo stesso
+%    codice (nessun filosofo mancino...)
+
 - module(phils) .
 - export([main/0, table/2, philosofer/4]) .
 
@@ -50,7 +54,7 @@ release_fork(Table, X) ->
 	sleep(rand:uniform(10)) ,
 	Table ! {free, X} .
 
-sleep(N) -> receive after N * 10 -> ok end.
+sleep(N) -> receive after N * 1 -> ok end.
 
 philosofer(Main, Table, N, Ite) when Ite > 0 ->
 	io:format("~p thinks (~p) ~n", [N, Ite]) ,
@@ -67,8 +71,8 @@ philosofer(Main, Table, N, Ite) when Ite > 0 ->
 philosofer(Main, _, _, 0) -> Main ! exit .
 
 main() ->
-	SEQ = lists:seq(0, 4),
+	SEQ = lists:seq(0, 21),
 	Table = spawn(?MODULE, table, [ SEQ, [] ]) ,
-	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, 5 ]) || Phil <- SEQ ] ,
+	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, 10 ]) || Phil <- SEQ ] ,
 	[ receive exit -> io:format("Bye bye philosofer ~p~n", [Phil]) end || Phil <- SEQ ]
 	.
