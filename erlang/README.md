@@ -61,3 +61,6 @@
    
    Suggerimento: sfruttare i meccanismi link/monitor di Erlang; fornire una
    seconda soluzione senza sfruttare tali meccanismi
+   
+4. Migliorare l'implementazione dei futures vista in Erlang gestendo anche le
+   eccezioni.
