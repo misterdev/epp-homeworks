@@ -27,11 +27,14 @@
    locale.
    
 ## Programmazione concorrente
+
 [1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/phils.erl) Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
    busy waiting e facendo in modo che tutti i filosofi eseguano lo stesso
    codice (nessun filosofo mancino...)
-2. Scrivere un programma che risolva il Cigarette Smokers Problem ([wikipedia](https://en.wikipedia.org/wiki/Cigarette_smokers_problem)). La soluzione deve prevedere cinque attori: i 3 fumatori,
+   
+[2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/cigasp.erl) Scrivere un programma che risolva il Cigarette Smokers Problem ([wikipedia](https://en.wikipedia.org/wiki/Cigarette_smokers_problem)). La soluzione deve prevedere cinque attori: i 3 fumatori,
    l'agente che mette sul tavolo gli ingredienti e il tavolo.
+   
 3. Risolvere il seguente problema: si vuole implementare un attore che
    gestisce una cella di memoria soggetta a transazioni. In particolare,
    il modulo deve implementare i seguenti metodi:
