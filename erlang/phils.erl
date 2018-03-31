@@ -5,8 +5,8 @@
 - module(phils) .
 - export([main/0, table/2, philosofer/4]) .
 
-- define(nphils, 5) .
-- define(iterations, 100) .
+- define(Nphils, 5) .
+- define(Iterations, 100) .
 % 5 filosofi 5 forchette servono due forchette per mangiare
 % aka filosofi in deadlock
 
@@ -69,16 +69,16 @@ philosofer(Main, Table, Id, Ite) ->
 	io:format("~p thinks (~p) ~n", [Id, Ite]) ,
 	sleep(rand:uniform(3)) ,
 	io:format("~p is hungry (~p)~n", [Id, Ite]) ,
-	get_forks(Table, Id, (Id+1) rem ?nphils) ,
+	get_forks(Table, Id, (Id+1) rem ?Nphils) ,
 	io:format("~p eats (~p)~n", [Id, Ite]) ,
 	sleep(rand:uniform(2)) ,
-	release_forks(Table, Id, (Id+1) rem ?nphils) ,
+	release_forks(Table, Id, (Id+1) rem ?Nphils) ,
 	philosofer(Main, Table, Id, Ite - 1) 
 .
 
 main() ->
-	Phils = lists:seq(0, ?nphils) ,
+	Phils = lists:seq(0, ?Nphils) ,
 	Table = spawn(?MODULE, table, [ Phils, [] ]) ,
-	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, ?iterations ]) || Phil <- Phils ] ,
+	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, ?Iterations ]) || Phil <- Phils ] ,
 	[ receive exit -> io:format("Bye bye philosofer ~p~n", [Phil]) end || Phil <- Phils ]
 .

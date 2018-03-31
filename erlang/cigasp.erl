@@ -11,7 +11,7 @@
 - module(cigasp) .
 - export([main/0, table/3, smoker/3, arbiter/4]) .
 
-- define(iterations, 100) .
+- define(Iterations, 100) .
 - define(Materials, [tobacco, paper, matches]) .
 
 % UTILS
@@ -91,7 +91,7 @@ smoker(Main, Table, Material) ->
 main() ->
     Table = spawn(?MODULE, table, [self(), [], []]) ,
     Smokers = [ spawn(?MODULE, smoker, [self(), Table, Material]) || Material <- ?Materials ] ,
-    Arbiter = spawn(?MODULE, arbiter, [self(), ?Materials, Smokers, ?iterations]) ,
-    receive { Arbiter, exit } -> io:format("ARBITER: ~p Smoking orders delivered! ~n", [?iterations]) end ,
-    [ receive smoked -> io:format("# ~p/~p Smoking completed! ~n", [I, ?iterations]) end || I <- lists:seq(1, ?iterations) ]
+    Arbiter = spawn(?MODULE, arbiter, [self(), ?Materials, Smokers, ?Iterations]) ,
+    receive { Arbiter, exit } -> io:format("ARBITER: ~p Smoking orders delivered! ~n", [?Iterations]) end ,
+    [ receive smoked -> io:format("# ~p/~p Smoking completed! ~n", [I, ?Iterations]) end || I <- lists:seq(1, ?Iterations) ]
 .
