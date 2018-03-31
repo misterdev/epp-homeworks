@@ -26,7 +26,8 @@ remove(_, {node, _, L, R}) -> append(R, L) .
 % 2. APPEND
 append(T1, nil) ->  T1 ;
 append(nil, T2) -> T2 ;
-append({node, K, L, R}, T2) -> insert(K, append(L, append(R, T2))).
+% append({node, K, L, R}, T2) -> insert(K, append(L, append(R, T2))).
+append({node, K, L, R}, T2) -> append(L, append(R, insert(K, T2)))) .
 
 foldappend(_F, nil, RET) -> RET ;
 foldappend(_F, T, nil) -> T ;
@@ -38,4 +39,5 @@ main() ->
 	Tree2 = foldl(fun insert/2, empty(), [ 6, 7, 13, 4, 1, 3]),
 	% append(Tree2, Tree).
 	Tree3 = foldappend(fun insert/2, Tree, Tree2) ,
-	remove(3, Tree3) .
+	remove(3, Tree3)
+.
