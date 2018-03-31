@@ -5,74 +5,80 @@
 - module(phils) .
 - export([main/0, table/2, philosofer/4]) .
 
+- define(nphils, 5) .
+- define(iterations, 100) .
 % 5 filosofi 5 forchette servono due forchette per mangiare
 % aka filosofi in deadlock
 
+% Utils
+sleep(Time) -> receive after Time * 1 -> ok end.
+
 % Attore che gestisce l'assegnamento di forchette
-table(L, Pending) ->
+table(FreeForks, Pending) ->
 	Process_pending = 
 		fun 
 			Aux([]) -> ko ;
-			Aux([T = {get, Phil, X}|Tl]) ->
-				case lists:member(X,L) of
+			Aux([R = {get, Phil, Fork1, Fork2}|Tl]) ->
+				case lists:member(Fork1, FreeForks) and lists:member(Fork1, FreeForks) of
 					% Se c'e' la forchetta restituisco ok
 					% sbloccando il richiedente
 					true ->
 						Phil ! ok ,
-						{ ok, L -- [X], Pending -- [T] } ;
+						{ ok, FreeForks -- [Fork1] -- [Fork2], Pending -- [R] } ;
 					% Altrimenti itero sulla code
 					false -> Aux(Tl)
 				end 
-		end,
+		end ,
 	case Process_pending(Pending) of
 		% Se ho assegnato una forchetta, reitero su tavolo
-		{ok, L2, Pending2} -> table(L2, Pending2) ;
+		{ok, FreeForks2, Pending2} -> table(FreeForks2, Pending2) ;
 		% altrimenti attendo nuove richieste
 		ko -> 
 			receive
 				% Se ricevo una richiesta di una forchetta
-				T = {get, Phil, X} ->
-					case lists:member(X, L) of
+				T = {get, Phil, Fork1, Fork2} ->
+					case lists:member(Fork1, FreeForks) and lists:member(Fork2, FreeForks) of
 						% Se la ho la restituisco e reitero
 						true ->
 							Phil ! ok ,
-							table(L -- [X], Pending) ; % differenza simmetrica fra insiemi
+							table(FreeForks -- [Fork1] -- [Fork2], Pending) ; % differenza simmetrica fra insiemi
 						false -> 
-							table(L, [T | Pending])
+							table(FreeForks, [T | Pending])
 						end ;
 				% Se qualcuno mi sblocca una forchetta reitero
-				{free, X} ->
-					table([X|L], Pending)
+				{free, Fork1, Fork2} ->
+					table([Fork1, Fork2 |FreeForks], Pending)
 			end
-	end.
+	end
+.
 
-get_fork(Table, X) ->
-	Table ! {get, self(), X} ,
-	receive ok -> ok end .
+% Philosofers
+get_forks(Table, Fork1, Fork2) ->
+	Table ! {get, self(), Fork1, Fork2} ,
+	receive ok -> ok end
+.
 
-release_fork(Table, X) ->
+release_forks(Table, Fork1, Fork2) ->
 	sleep(rand:uniform(10)) ,
-	Table ! {free, X} .
+	Table ! {free, Fork1, Fork2}
+.
 
-sleep(N) -> receive after N * 1 -> ok end.
+philosofer(Main, _, _, 0) -> Main ! exit ;
 
-philosofer(Main, Table, N, Ite) when Ite > 0 ->
-	io:format("~p thinks (~p) ~n", [N, Ite]) ,
+philosofer(Main, Table, Id, Ite) ->
+	io:format("~p thinks (~p) ~n", [Id, Ite]) ,
 	sleep(rand:uniform(3)) ,
-	io:format("~p is hungry (~p)~n", [N, Ite]) ,
-	get_fork(Table, N) ,
-	get_fork(Table, (N+1) rem 5) ,
-	io:format("~p eats (~p)~n", [N, Ite]) ,
+	io:format("~p is hungry (~p)~n", [Id, Ite]) ,
+	get_forks(Table, Id, (Id+1) rem ?nphils) ,
+	io:format("~p eats (~p)~n", [Id, Ite]) ,
 	sleep(rand:uniform(2)) ,
-	release_fork(Table, N) ,
-	release_fork(Table, (N+1) rem 5) ,
-	philosofer(Main, Table, N, Ite - 1) ;
-
-philosofer(Main, _, _, 0) -> Main ! exit .
+	release_forks(Table, Id, (Id+1) rem ?nphils) ,
+	philosofer(Main, Table, Id, Ite - 1) 
+.
 
 main() ->
-	SEQ = lists:seq(0, 21),
-	Table = spawn(?MODULE, table, [ SEQ, [] ]) ,
-	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, 10 ]) || Phil <- SEQ ] ,
-	[ receive exit -> io:format("Bye bye philosofer ~p~n", [Phil]) end || Phil <- SEQ ]
-	.
+	Phils = lists:seq(0, ?nphils) ,
+	Table = spawn(?MODULE, table, [ Phils, [] ]) ,
+	[ spawn(?MODULE, philosofer, [ self(), Table, Phil, ?iterations ]) || Phil <- Phils ] ,
+	[ receive exit -> io:format("Bye bye philosofer ~p~n", [Phil]) end || Phil <- Phils ]
+.
