@@ -9,61 +9,89 @@
 % The third Smoker takes the supplies and smokes for a while
 
 - module(cigasp) .
-- export([main/0, table/0, smoker/3, arbiter/3]) .
+- export([main/0, table/3, smoker/3, arbiter/4]) .
 
-- define(ingredients, 3) .
-- define(iterations, 2) .
+- define(iterations, 100) .
+- define(Materials, [tobacco, paper, matches]) .
 
 % UTILS
-sleep(N) -> receive after N * 100 -> ok end .
+sleep(N) -> receive after N * 1 -> ok end .
 
 % AGENTS
+table(Main, Inventory, Requests) ->
+    io:format("- INVENTORY: ~p~n- REQUESTS: ~p~n", [Inventory, Requests]) ,
+    Satisfy_pending =
+        fun
+            Aux( [] ) -> ko ;
+            Aux( [ R = { get, _, [Supply1, Supply2] } |TL] ) ->
+                case lists:member(Supply1, Inventory) and lists:member(Supply2, Inventory) of
+                    true -> R ;
+                    false -> Aux(TL)
+                end
+        end ,
+    case Satisfy_pending(Requests) of
+        R = { get, Smoker, [Supply1, Supply2] } -> 
+            Smoker ! { self(), ok } ,
+            io:format("T: ALLOWED TO SMOKE ~p and ~p ~n", [Supply1, Supply2 ]) ,
+            table(Main, lists:delete(Supply1, lists:delete(Supply2, Inventory) ), lists:delete(R, Requests)) ;
+        ko -> 
+            receive
+                { put, Supply } -> 
+                    io:format("T: RECEIVED ~p~n", [Supply ]),
+                    table(Main, Inventory ++ [Supply], Requests) ;
+                R = { get, Smoker, [Supply1, Supply2] } -> 
+                    io:format("T: REQUESTED SOME ~p and ~p ~n", [Supply1, Supply2 ]) ,
+                    case lists:member(Supply1, Inventory) and lists:member(Supply2, Inventory) of
+                        true -> 
+                            Smoker ! { self(), ok } ,
+                            io:format("T: ALLOWED TO SMOKE ~p and ~p ~n", [Supply1, Supply2 ]) ,
+                            table(Main, lists:delete(Supply1, lists:delete(Supply2, Inventory) ), Requests) ;
+                        false ->
+                            table(Main, Inventory, Requests ++ [R])
+                    end
 
-table() -> 
-    receive
-        X -> io:format("RECEIVED ~p ~n", [X]),
-        table()
+            end
     end
 .
 
-arbiter(Main, _, 0) -> Main ! exit ;
+% ARBITER
 
-arbiter(Main, Smokers, Iteration) ->
-    IgnoredSupply = rand:uniform( ?ingredients ) - 1 ,
-    [ Smoker ! { place, lists:seq(0, ?ingredients - 1) -- [IgnoredSupply] } || Smoker <- Smokers ] ,
-    sleep(rand:uniform(5)) ,
-    arbiter(Main, Smokers, Iteration - 1 )
+arbiter(Main, _, _, 0) -> Main ! { self(), exit } ;
+
+arbiter(Main, Materials, Smokers, Iteration) ->
+    ChosenMaterials = choose_materials(Materials) ,
+    io:format("A: now smoking: ~p~n", [ChosenMaterials]) ,
+    [ Smoker ! { place, ChosenMaterials } || Smoker <- Smokers ] ,
+    arbiter(Main, Materials, Smokers, Iteration - 1 )
 .
 
+% SMOKER
 
-get_materials(Table, Supplies) ->
-	Table ! { get, self(), Supplies }
-	% receive ok -> ok end
+choose_materials(Materials) -> 
+    Ignored = rand:uniform(length(Materials)) ,
+    Materials -- [lists:nth(Ignored, Materials)]
 .
 
-smoker(Main, Table, SmokerId) ->
+smoker(Main, Table, Material) ->
     receive
-        { place, [Supply1, Supply2] } when Supply1 == SmokerId orelse Supply2 == SmokerId ->
-            % io:format("~p JLKJLKJL, ~p ~p ~n", [SmokerId, Supply1, Supply2]) ,
-            Table ! { put, SmokerId } ;
+        { place, [Supply1, Supply2] } when Supply1 == Material orelse Supply2 == Material ->
+            io:format("S: ~p -> I SEND MY MATERIAL~n", [Material]) ,
+            Table ! { put, Material } ;
         { place, Supplies } ->
-            % io:format("~p JLKJLKJL, ~p ~n", [SmokerId, Supplies]) ,
-            get_materials(Table, Supplies) ,
-            sleep(rand:uniform(5)) % Smokes for some time
-        end ,
-        smoker(Main, Table, SmokerId)
+            io:format("S: ~p -> I NEED ~p~n", [Material, Supplies]) ,
+            Table ! { get, self(), Supplies } ;
+        { Table, ok } ->
+            io:format("S: ~p -> I SMOKE~n", [Material]) ,
+            sleep(rand:uniform(3)) , % Smokes for some time
+            Main ! smoked 
+    end ,
+    smoker(Main, Table, Material)
 .
-    % io:format("Smoker ~p waits materials~n", [SmokerId]) ,
-    % get_materials(Table, SmokerId) ,
-    % io:format("Smoker ~p is smoking~n", [SmokerId]) ,
-    % sleep(rand:uniform(5)) ,
-    % smoker(Main, Table, SmokerId) .
 
 main() ->
-    Table = spawn(?MODULE, table, []) ,
-    Smokers = [ spawn(?MODULE, smoker, [self(), Table, SmokerId]) || SmokerId <- lists:seq(0, ?ingredients - 1) ] ,
-    Arbiter = spawn(?MODULE, arbiter, [self(), Smokers, ?iterations]) 
-
-    % Tup
-    % SPAWN AGENT WITH SMOKERS PIDS
+    Table = spawn(?MODULE, table, [self(), [], []]) ,
+    Smokers = [ spawn(?MODULE, smoker, [self(), Table, Material]) || Material <- ?Materials ] ,
+    Arbiter = spawn(?MODULE, arbiter, [self(), ?Materials, Smokers, ?iterations]) ,
+    receive { Arbiter, exit } -> io:format("ARBITER: ~p Smoking orders delivered! ~n", [?iterations]) end ,
+    [ receive smoked -> io:format("# ~p/~p Smoking completed! ~n", [I, ?iterations]) end || I <- lists:seq(1, ?iterations) ]
 .
