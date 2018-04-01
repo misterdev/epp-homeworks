@@ -39,6 +39,7 @@
 - Cella = init_transaction(Value):
 
     il processo chiamante crea la cella di memoria, inizializzandola a un valore. Questa operazione inizia la transazione. La funzione restituisce il PID dell'attore che implementa la cella.
+    
 - commit(Cella):
     
     segnala che la transazione è avvenuta con successo
