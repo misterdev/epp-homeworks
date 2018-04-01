@@ -7,20 +7,20 @@
 
 ## Programmazione funzionale
 
-[1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/bstree.erl#L20) Scrivere la funzione che rimuove una chiave da un BST
+[1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/1-bstree.erl#L20) Scrivere la funzione che rimuove una chiave da un BST
 
-[2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/bstree.erl#L26) Scrivere la funzione append senza usare una fold e usando una fold.
+[2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/1-bstree.erl#L26) Scrivere la funzione append senza usare una fold e usando una fold.
    La funzione implemenata è tail-ricorsiva? Altrimenti fornire un'altra
    implementazione tail ricorsiva.
 
-[3.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/list.erl#L14) Scrivere la funzione che, data una lista e un predicato, ritorna due
+[3.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/2-list.erl#L14) Scrivere la funzione che, data una lista e un predicato, ritorna due
    liste contenenti rispettivamente gli elementi della lista in input che
    soddisfano il predicato e quelli che non lo soddisfano. Fornire una
    implementazione usando la fold e una senza usare la fold.
    La funzione implemenata è tail-ricorsiva? Altrimenti fornire un'altra
    implementazione tail ricorsiva.
 
-[4.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/sbstree.erl#L22) Implementare un BST che mantenga coppie chiave-valore nei nodi.
+[4.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/3-sbstree.erl#L22) Implementare un BST che mantenga coppie chiave-valore nei nodi.
    Scrivere la funzione che, dato un BST, ritorni il valore associato a una
    chiave nel BST se esiste e not_present altrimenti. Implementare la funzione
    due volte: la prima senza usare eccezioni, la seconda usando un'eccezione
@@ -28,11 +28,11 @@
    
 ## Programmazione concorrente
 
-[1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/phils.erl) Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
+[1.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/4-phils.erl) Risolvere il problema dei filosofi a cena evitando deadlock, starvation,
    busy waiting e facendo in modo che tutti i filosofi eseguano lo stesso
    codice (nessun filosofo mancino...)
    
-[2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/cigasp.erl) Scrivere un programma che risolva il Cigarette Smokers Problem ([wikipedia](https://en.wikipedia.org/wiki/Cigarette_smokers_problem)). La soluzione deve prevedere cinque attori: i 3 fumatori, l'agente che mette sul tavolo gli ingredienti e il tavolo.
+[2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/5-cigasp.erl) Scrivere un programma che risolva il Cigarette Smokers Problem ([wikipedia](https://en.wikipedia.org/wiki/Cigarette_smokers_problem)). La soluzione deve prevedere cinque attori: i 3 fumatori, l'agente che mette sul tavolo gli ingredienti e il tavolo.
 
 [3.]() Risolvere il seguente problema: si vuole implementare un attore che gestisce una cella di memoria soggetta a transazioni. In particolare, il modulo deve implementare i seguenti metodi:
 
