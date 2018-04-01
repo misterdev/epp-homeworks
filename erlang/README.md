@@ -39,7 +39,7 @@
 - Cella = init_transaction(Value):
 
     il processo chiamante crea la cella di memoria, inizializzandola a un valore. Questa operazione inizia la transazione. La funzione restituisce il PID dell'attore che implementa la cella.
-    
+
 - commit(Cella):
     
     segnala che la transazione è avvenuta con successo
@@ -65,6 +65,6 @@ In parallelo lanciare 3 attori:
 
 Verificare che il comportamento sia quello opportuno ogni volta.
    
-Suggerimento: sfruttare i meccanismi link/monitor di Erlang; fornire una seconda soluzione senza sfruttare tali meccanismi
+[3.2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/mcell2.erl) Fornire una soluzione sfruttando i meccanismi link/monitor di Erlang
    
 [4.]() Migliorare l'implementazione dei futures vista in Erlang gestendo anche le eccezioni.

@@ -3,6 +3,7 @@
 - compile({no_auto_import, [get/1]}) .
 
 - define(Iterations, 10) .
+
 % UTILS
 sleep(Time) -> receive after Time -> ok end .
 
@@ -13,17 +14,19 @@ print(Message, Variables) -> io:format(Message, Variables) .
 
 cell(Val, Awaiters) ->
     receive
-        { Pid, get } -> Pid ! { self(), Val }, cell(Val, Awaiters), print("get~n") ;
-        { Pid, await } -> cell(Val, Awaiters ++ [Pid]), print("await~n") ;
-        commit -> [ Pid ! { self(), await, commit} || Pid <- Awaiters], cell(Val, Awaiters), print("commit~n") ;
-        abort -> [ Pid ! { self(), await, abort} || Pid <- Awaiters], cell(Val, Awaiters), print("commit~n")
+        { Pid, get } -> Pid ! { self(), Val }, cell(Val, Awaiters) ;
+        { Pid, await } -> cell(Val, Awaiters ++ [Pid]) ;
+        commit -> [ Pid ! { self(), await, commit} || Pid <- Awaiters], cell(Val, Awaiters) ;
+        abort -> [ Pid ! { self(), await, abort} || Pid <- Awaiters], cell(Val, Awaiters)
     end
 .
 
 % Cell API
 
 init_transaction(Val) ->
-    spawn(?MODULE, cell, [Val, []])
+    Pid = spawn(?MODULE, cell, [Val, []]) ,
+    print("|  > Cell1 ~p = ~p~n", [Pid, Val]) ,
+    Pid
 .
 
 commit(Cell) ->
@@ -60,7 +63,6 @@ abort_or_commit(Cell, CellId) ->
 
 actor1(Main, Cell, CellId) -> 
     Val = get(Cell) ,
-    % print("=A1: GOT VALUE ~p FROM ~p~n", [Val, Cell]) ,
     case await(Cell) of
         commit -> print("|  = A1: GOT VALUE ~p FROM Cell~p~n", [Val, CellId]) ;
         _ -> ko
@@ -71,9 +73,6 @@ actor1(Main, Cell, CellId) ->
 actor2(Main, Cell1, Cell2) -> 
     Val1 = get(Cell1) ,
     Val2 = get(Cell2) ,
-    % print("=A2: ~p + ~p = ~p~n", [Val1, Val2, Val1+Val2]) ,
-    % await(Cell1) ,
-    % ,
     case { await(Cell1), await(Cell2) } of
         { commit, commit } -> print("|  = A2: ~p + ~p = ~p~n", [Val1, Val2, Val1+Val2]) ;
         _ -> ko
@@ -84,15 +83,13 @@ actor2(Main, Cell1, Cell2) ->
 test(?Iterations) -> print("~n===== ALL TESTS COMPLETED =====~n") ;
 
 test(Iterations) ->
+    print("~n~n===== TEST ~p/~p STARTED =====~n", [Iterations+1, ?Iterations]) ,
+    print("|~n|  +++ CELLS CREATED +++~n|~n") ,
     Cell1 = init_transaction(3) ,
     Cell2 = init_transaction(5) ,
     spawn(?MODULE, actor1, [self(), Cell1, 1]) ,
     spawn(?MODULE, actor1, [self(), Cell2, 2]) ,
     spawn(?MODULE, actor2, [self(), Cell1, Cell2]) ,
-    print("~n~n===== TEST ~p/~p STARTED =====~n", [Iterations+1, ?Iterations]) ,
-    print("|~n|  +++ CELLS CREATED +++~n|~n") ,
-    print("|  > Cell1 ~p~n", [Cell1]) ,
-    print("|  > Cell2 ~p~n", [Cell2]) ,
     print("|~n|  >>> NOW WAITING 5s <<<~n|~n") ,
     sleep(2000) ,
     abort_or_commit(Cell1, 1) ,
