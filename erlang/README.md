@@ -67,4 +67,4 @@ Verificare che il comportamento sia quello opportuno ogni volta.
    
 [3.2.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/mcell2.erl) Fornire una soluzione sfruttando i meccanismi link/monitor di Erlang
    
-[4.]() Migliorare l'implementazione dei futures vista in Erlang gestendo anche le eccezioni.
+[4.](https://github.com/MisterDev/epp-homeworks/blob/master/erlang/futures.erl) Migliorare l'implementazione dei futures vista in Erlang gestendo anche le eccezioni.
